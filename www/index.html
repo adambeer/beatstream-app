@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <meta http-equiv="Content-Security-Policy" content="default-src * gap:; style-src 'self' 'unsafe-inline'; media-src * 'self' about:; img-src * data:; script-src 'unsafe-inline' *" />
+    <link rel="stylesheet" href="css/jquery.mobile.structure-1.4.5.css">
+    <link rel="stylesheet" type="text/css" href="css/theme.css" />
+    <title>Beat Stream</title>
+</head>
+<body>
+<div data-role="page" id="mainPage">
+    <div class="centerdiv" style="margin-top:30px; height:50px;"><img src="img/logo.png" height="50"><span style="position:relative; top:-18px; font-weight:bold; font-size:20px;">Beat Stream</span></div>
+    <div id="playlistContainer"></div>
+    <div class="homeBottom">
+    	<div class="homeBottom-button" onClick="showPlayer();"><div class="play" style="margin:12px auto;"></div></div>
+        <div class="homeBottom-button" onClick="showSearch();">Search</div>
+        <div class="homeBottom-button disabled" onClick="showPlaylists();">Playlists</div>
+        <!--<div class="homeBottom-button" onClick="showLibrary();">My Library</div>-->
+    </div>
+</div>
+
+<div data-role="page" id="settingsPage">
+	<div class="centerdiv" style="margin-top:30px; height:50px;"><img src="img/logo.png" height="50"><span style="position:relative; top:-18px; font-weight:bold; font-size:20px;">Beat Stream</span></div>
+    <div class="genericContainer">
+    	<p>This app requires the use of a backend server in order to function. Please <a href="http://adambeer.ca/beatstream" target="_blank">CLICK HERE</a> for setup instructions.</p>
+        <p><strong>Enter the Backend URL</strong></p>
+        <input type="url" name="url" id="backendURLInput" value="http://">
+        <p>&nbsp;</p>
+        <button class="mainButton" onClick="saveAppSettings();">Connect</button>
+    </div>
+</div>
+
+<div data-role="page" id="playerPage">
+	<div id="backButton" onClick="showMainPage();" style="margin-top:30px;"><img src="img/Arrow-Back-icon.png" height="30"></div>
+    <div id="menuButton" style="margin-top:30px;"><a href="#playerPagePopup" data-rel="popup"><img src="img/menu-icon.png" height="30"></a></div>
+    <div id="songArt">
+    	<div class="loader" id="songLoader">Loading...</div>
+    </div>
+    <div data-role="popup" id="playerPageEditPopup" class="playerPagePopup">
+    	<p>Title</p>
+    	<p>Artist</p>
+        <p>Album</p>
+        <p>Genre</p>
+    </div>
+    <div data-role="popup" id="playerPagePopup" class="playerPagePopup">
+    	<p><a href="javascript:sendResourceSong();">Re-Source Song</a></p>
+    	<p><a href="javascript:editSong();">Edit Song Data</a></p>
+        <!--<p><a href="javascript:localDownloadSong();">Download Song</a></p>-->
+        <p><a href="javascript:sendDeleteSong();" style="color:#e63737;">Delete Song From Server</a></p>
+    </div>
+    <div id="songTitle"></div>
+    <div class="playerArea">
+        <div class="playerTimes"><div id="timeLeft">0:00</div><div id="timeRight">4:00</div></div>
+        <div class="playerProgressBar"><div id="downloadProgress"></div><div id="songProgress"></div></div>
+        <div class="playerControls">
+            <div class="playerControlsButtons" onClick="playerPrev();" title="Previous Song"><div class="previous"></div><div class="previous"></div></div>
+            <div class="playerControlsButtons play" id="playerPlayPause" onClick="playerTogglePlay();"></div>
+            <div class="playerControlsButtons" onClick="playerNext();" title="Next Song"><div class="next"></div><div class="next"></div></div>
+        </div>
+        <div id="jPlayer_instance" class="jp-jplayer"></div>
+    </div>
+</div>
+
+<div data-role="page" id="searchPage">
+    <div class="centerdiv" style="margin-top:28px; height:50px;"><img src="img/logo.png" height="50"><span style="position:relative; top:-18px; font-weight:bold; font-size:20px;">Beat Stream</span></div>
+    <div id="searchBar"><input type="text" id="searchBarInput" placeholder="Search By Artist..."><button id="searchByArtistButton" class="searchBySel">By Artist</button>&nbsp;&nbsp;<button id="searchBySongButton">By Song</button></div>
+    <div id="searchContainer"></div>
+    <div class="homeBottom">
+    	<div class="homeBottom-button" onClick="showPlayer();"><div class="play" style="margin:12px auto;"></div></div>
+        <div class="homeBottom-button" onClick="showSearch();">Search</div>
+        <div class="homeBottom-button disabled" onClick="showPlaylists();">Playlists</div>
+        <!--<div class="homeBottom-button" onClick="showLibrary();">My Library</div>-->
+    </div>
+</div>
+
+<div data-role="page" id="editSongPage">
+	<div id="backButton" onClick="showPlayer();" style="margin-top:30px;"><img src="img/Arrow-Back-icon.png" height="30"></div>
+    <div class="genericContainer" style="margin-top:80px;">
+        <div style="text-align:center; width:90%; margin-left:auto; margin-right:auto;">
+            <input type="text" id="editInputTitle" value="" placeholder="Song Title...">
+            <p>&nbsp;</p>
+            <input type="text" id="editInputArtist" value="" placeholder="Artist..">
+            <p>&nbsp;</p>
+            <input type="text" id="editInputAlbum" value="" placeholder="Album...">
+            <p>&nbsp;</p>
+            <input type="text" id="editInputGenre" value="" placeholder="Genre...">
+            <p>&nbsp;</p>
+            <button onClick="sendEditSong()" class="mainButton">Edit Song</button>
+        </div>
+    </div>
+    <div class="homeBottom">
+    	<div class="homeBottom-button" onClick="showPlayer();"><div class="play" style="margin:12px auto;"></div></div>
+        <div class="homeBottom-button" onClick="showSearch();">Search</div>
+        <div class="homeBottom-button disabled" onClick="showPlaylists();">Playlists</div>
+        <!--<div class="homeBottom-button" onClick="showLibrary();">My Library</div>-->
+    </div>
+</div>
+
+<div data-role="page" id="libraryPage">
+    <div class="genericContainer" style="margin-top:80px;">
+        <div id="libraryContainer" class="listContainer"></div>
+    </div>
+    <div class="homeBottom">
+    	<div class="homeBottom-button" onClick="showPlayer();"><div class="play" style="margin:12px auto;"></div></div>
+        <div class="homeBottom-button" onClick="showSearch();">Search</div>
+        <div class="homeBottom-button" onClick="showPlaylists();">Playlists</div>
+        <!--<div class="homeBottom-button" onClick="showLibrary();">My Library</div>-->
+    </div>
+</div>
+
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+  	<script src="js/jquery.mobile-1.4.5.min.js"></script>
+    <script type="text/javascript" src="js/jquery.jplayer.min.js"></script>
+    <script type="text/javascript">
+        app.initialize();
+    </script>
+</body>
+
+</html>
